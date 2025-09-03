@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "types": ["node", "@playwright/test"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./e2e/*"],
+      "@utils/*": ["./e2e/utils/*"],
+      "@fixtures/*": ["./e2e/fixtures/*"],
+      "@pom/*": ["./e2e/pom/*"],
+      "@tests/*": ["./e2e/tests/*"],
+      "@test-data/*": ["e2e/data/*"],
+      "@config/*": ["./*"]
+    }
+  },
+  "include": ["e2e/**/*.ts", "playwright.config.ts", "utils/**/*.ts"]
+}

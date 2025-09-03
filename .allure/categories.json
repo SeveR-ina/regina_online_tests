@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Passed tests",
+    "matchedStatuses": ["passed"]
+  },
+  {
+    "name": "Ignored or skipped tests",
+    "messageRegex": ".*ignored.*",
+    "matchedStatuses": ["skipped"]
+  },
+  {
+    "name": "Infrastructure errors",
+    "messageRegex": ".*RuntimeException.*",
+    "matchedStatuses": ["broken"]
+  },
+  {
+    "name": "Outdated or missing resources",
+    "messageRegex": ".*FileNotFound.*",
+    "matchedStatuses": ["broken"]
+  },
+  {
+    "name": "Wait condition failures",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*waiting for.*"
+  },
+  {
+    "name": "Timeout errors (Broken)",
+    "matchedStatuses": ["broken"],
+    "messageRegex": "^Test timeout.*"
+  },
+  {
+    "name": "Timeout errors (Failed)",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*Error: Timed out.*"
+  },
+  {
+    "name": "Assertion failures (toEqual)",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*Error: expect(received).toEqual.*"
+  },
+  {
+    "name": "Attribute mismatch errors",
+    "messageRegex": ".*attribute with value.*",
+    "matchedStatuses": ["failed"]
+  },
+  {
+    "name": "Locator visibility failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*Error: Visibility of locator.*"
+  },
+  {
+    "name": "Unclassified exceptions",
+    "messageRegex": ".*\\sException:.*",
+    "matchedStatuses": ["broken"]
+  }
+]

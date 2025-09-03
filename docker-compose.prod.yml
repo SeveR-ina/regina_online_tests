@@ -1,0 +1,127 @@
+version: "3.8"
+
+# ==========================================================================
+# PRODUCTION TESTING CONFIGURATION
+# ==========================================================================
+# Use this for production testing against your production domain
+# Configure URLs via environment variables or GitHub secrets
+# Commands:
+#   docker-compose -f docker-compose.prod.yml up smoke-tests
+#   docker-compose -f docker-compose.prod.yml up e2e-tests
+#   docker-compose -f docker-compose.prod.yml --profile regression up regression-tests
+#   docker-compose -f docker-compose.prod.yml --profile api up api-tests
+# ==========================================================================
+
+services:
+  # Main E2E Tests - Full production test suite
+  e2e-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - TARGET=prod
+      - DOCKER=true
+      - CI=true
+      - HEADED=false
+      - LOG_LEVEL=info
+      # Production URLs (from environment variables/secrets)
+      - TEST_BASE_URL_PROD=${TEST_BASE_URL_PROD}
+      - API_BASE_URL_PROD=${API_BASE_URL_PROD}
+      - ADMIN_BASE_URL_PROD=${ADMIN_BASE_URL_PROD}
+      # CI-optimized settings
+      - MAX_RETRIES=1
+      - ACTION_TIMEOUT=10000
+      - NAVIGATION_TIMEOUT=20000
+      - EXPECT_TIMEOUT=10000
+      # Minimal recording for CI efficiency
+      - SCREENSHOT_ON_FAILURE=true
+      - VIDEO_ON_FAILURE=false
+      - TRACE_ON_FAILURE=false
+    networks:
+      - e2e-prod-network
+    command: npm run test
+    restart: "no"
+
+  # Critical Path Smoke Tests
+  smoke-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ci
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - TARGET=prod
+      - DOCKER=true
+      - CI=true
+      - HEADED=false
+      - TEST_BASE_URL_PROD=${TEST_BASE_URL_PROD}
+      - API_BASE_URL_PROD=${API_BASE_URL_PROD}
+      - SCREENSHOT_ON_FAILURE=true
+      - MAX_RETRIES=2
+      - ACTION_TIMEOUT=8000
+    networks:
+      - e2e-prod-network
+    command: npm run test:smoke
+    restart: "no"
+
+  # Comprehensive Regression Tests (use with --profile regression)
+  regression-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - TARGET=prod
+      - DOCKER=true
+      - CI=true
+      - HEADED=false
+      - TEST_BASE_URL_PROD=${TEST_BASE_URL_PROD}
+      - API_BASE_URL_PROD=${API_BASE_URL_PROD}
+      - ADMIN_BASE_URL_PROD=${ADMIN_BASE_URL_PROD}
+      - SCREENSHOT_ON_FAILURE=true
+      - TRACE_ON_FAILURE=true
+      - MAX_RETRIES=1
+    networks:
+      - e2e-prod-network
+    command: npm run test:regression
+    restart: "no"
+    profiles:
+      - regression
+
+  # API-Only Tests (use with --profile api)
+  api-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ci
+    volumes:
+      - ./test-results:/app/test-results
+    environment:
+      - TARGET=prod
+      - DOCKER=true
+      - CI=true
+      - API_BASE_URL_PROD=${API_BASE_URL_PROD}
+      - MAX_API_RESPONSE_TIME=3000
+    networks:
+      - e2e-prod-network
+    command: npm run test:api
+    restart: "no"
+    profiles:
+      - api
+
+networks:
+  e2e-prod-network:
+    driver: bridge
+
+volumes:
+  test-results:
+    driver: local

@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🎉 Post-commit actions running..."
+
+# ===========================================
+# 1. Clean up temporary files and logs
+# ===========================================
+echo "🧹 Cleaning up temporary files..."
+rm -rf .tmp
+rm -rf logs/*.tmp
+
+# ===========================================
+# 2. Update documentation if needed (optional)
+# ===========================================
+# Uncomment if you have auto-generated docs
+# echo "📚 Updating documentation..."
+# npm run docs:build
+
+# ===========================================
+# 3. Notify about successful commit (optional)
+# ===========================================
+COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+echo "✅ Commit successful: $COMMIT_MESSAGE"
+
+# Optional: Send notification to Slack or other service
+# if [ ! -z "$SLACK_WEBHOOK_URL" ]; then
+#   curl -X POST -H 'Content-type: application/json' \
+#     --data "{\"text\":\"✅ New commit: $COMMIT_MESSAGE\"}" \
+#     "$SLACK_WEBHOOK_URL"
+# fi

@@ -1,0 +1,116 @@
+version: "3.8"
+
+# ==========================================================================
+# LOCALHOST/DEVELOPMENT TESTING CONFIGURATION
+# ==========================================================================
+# Use this for local development testing against localhost:3000
+# Commands:
+#   docker-compose -f docker-compose.dev.yml up e2e-tests
+#   docker-compose -f docker-compose.dev.yml up smoke-tests
+#   docker-compose -f docker-compose.dev.yml --profile debug up dev-runner
+#   docker-compose -f docker-compose.dev.yml --profile codegen up codegen
+# ==========================================================================
+
+services:
+  # Main E2E Tests - Full test suite against localhost
+  e2e-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./logs:/app/logs
+      - .:/app # Hot reloading for development
+      - /app/node_modules
+    environment:
+      - TARGET=local
+      - DOCKER=true
+      - HEADED=false
+      - DEBUG_MODE=true
+      - LOG_LEVEL=debug
+      # Localhost URLs
+      - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
+      - API_BASE_URL_LOCAL=http://host.docker.internal:3000/api
+      - ADMIN_BASE_URL_LOCAL=http://host.docker.internal:3000/admin
+      # Development-friendly timeouts
+      - MAX_RETRIES=2
+      - ACTION_TIMEOUT=15000
+      - NAVIGATION_TIMEOUT=30000
+      # Full recording for debugging
+      - SCREENSHOT_ON_FAILURE=true
+      - VIDEO_ON_FAILURE=true
+      - TRACE_ON_FAILURE=true
+    networks:
+      - e2e-dev-network
+    command: npm run test
+
+  # Quick Smoke Tests - Fast validation (Desktop Chrome only)
+  smoke-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - TARGET=local
+      - DOCKER=true
+      - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
+      - API_BASE_URL_LOCAL=http://host.docker.internal:3000/api
+      - SCREENSHOT_ON_FAILURE=true
+    networks:
+      - e2e-dev-network
+    command: npm run test:smoke -- --project=chromium
+
+  # Interactive Debug Runner (use with --profile debug)
+  dev-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - .:/app
+      - /app/node_modules
+    environment:
+      - TARGET=local
+      - DOCKER=true
+      - HEADED=true
+      - DEBUG_MODE=true
+      - PAUSE_ON_FAILURE=true
+      - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
+    networks:
+      - e2e-dev-network
+    command: npm run test:debug
+    profiles:
+      - debug
+
+  # Code Generator (use with --profile codegen)
+  codegen:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - TARGET=local
+      - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
+    networks:
+      - e2e-dev-network
+    command: npm run codegen:local
+    profiles:
+      - codegen
+
+networks:
+  e2e-dev-network:
+    driver: bridge
+
+volumes:
+  test-results:
+    driver: local

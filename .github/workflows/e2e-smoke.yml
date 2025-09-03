@@ -1,0 +1,53 @@
+name: E2E Smoke
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Target environment (local or prod)"
+        required: true
+        default: "prod"
+  schedule:
+    - cron: "0 6 * * *"
+  repository_dispatch:
+    types: [run-e2e-smoke]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      TARGET: ${{ github.event.inputs.target || 'prod' }}
+      TEST_BASE_URL_LOCAL: http://localhost:3000
+      API_BASE_URL_LOCAL: http://localhost:3000/api
+      TEST_BASE_URL_PROD: https://reginaonline.de
+      API_BASE_URL_PROD: https://reginaonline.de/api
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps
+        run: npm ci
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run smoke tests (Chrome only for production efficiency)
+        run: npx playwright test --grep @smoke --project=chromium
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+      - name: Upload traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces
+          path: test-results

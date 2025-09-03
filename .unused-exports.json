@@ -1,0 +1,24 @@
+{
+  "ignorePaths": ["node_modules", "test-results", "allure-results", "dist", "build"],
+  "ignoreFiles": ["*.config.*", "*.d.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "allowUnusedTypes": true,
+  "excludePathsFromReport": [
+    "e2e/fixtures/global-setup.ts",
+    "e2e/fixtures/global.teardown.ts",
+    "e2e/fixtures/test-fixtures.ts",
+    "playwright.config.ts",
+    "reportConfig.ts",
+    "e2e/config/environments.ts",
+    "e2e/types/index.ts",
+    "e2e/utils/logger.ts",
+    "e2e/utils/expect.ts",
+    "e2e/utils/core.utils.ts",
+    "e2e/utils/api.utils.ts",
+    "e2e/utils/workflows.utils.ts",
+    "e2e/data/constants.ts",
+    "e2e/data/messages.ts",
+    "e2e/data/blog-content.ts",
+    "e2e/mocks/network.mock.ts",
+    "e2e/pom/"
+  ]
+}
