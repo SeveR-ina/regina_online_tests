@@ -1,31 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Running pre-commit hooks..."
+# Run lint-staged to format and lint only staged files
+npx lint-staged
 
-# ===========================================
-# 1. Format code with Prettier
-# ===========================================
-echo "📝 Formatting code with Prettier..."
-npm run format
-if [ $? -ne 0 ]; then
-  echo "❌ Prettier formatting failed"
-  exit 1
-fi
-
-# ===========================================
-# 2. Lint code with ESLint and fix auto-fixable issues
-# ===========================================
-echo "🧹 Linting code with ESLint..."
-npm run lint:fix
-if [ $? -ne 0 ]; then
-  echo "❌ ESLint found unfixable issues"
-  exit 1
-fi
-
-# ===========================================
-# 3. Type checking with TypeScript
-# ===========================================
+# Run type check on all files (since types can affect each other)
 echo "🔍 Running TypeScript type checking..."
 npm run type-check
 if [ $? -ne 0 ]; then
@@ -33,15 +12,10 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# ===========================================
-# 4. Run smoke tests (optional, can be disabled for speed)
-# ===========================================
-# Uncomment the lines below to run smoke tests on commit
-# echo "🚀 Running smoke tests..."
-# npm run test:smoke
-# if [ $? -ne 0 ]; then
-#   echo "❌ Smoke tests failed"
-#   exit 1
-# fi
+# If any files were modified by lint-staged, abort commit
+if ! git diff --quiet; then
+  echo "❌ Formatting/linting made changes. Please stage them and commit again."
+  exit 1
+fi
 
 echo "✅ All pre-commit checks passed!"

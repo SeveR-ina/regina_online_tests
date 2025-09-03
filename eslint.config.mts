@@ -89,6 +89,7 @@ export default tseslint.config(
       "e2e/.auth/**",
       "*.min.js",
       "eslint.config.mts",
+      "lint-staged.config.js",
     ],
   }
 );

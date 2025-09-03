@@ -132,11 +132,19 @@ jobs:
       - name: Run E2E tests
         run: |
           if [[ "${{ env.TYPE }}" == "smoke" ]]; then
-            # Smoke tests: Chrome desktop only
-            npm run test:smoke
+            # Smoke tests: Chrome desktop only - use TARGET environment
+            if [[ "${{ env.TARGET }}" == "prod" ]]; then
+              npm run test:smoke:prod
+            else
+              npm run test:smoke:local
+            fi
           else
             # Regression tests: Current browser from matrix
-            npx playwright test --grep '@regression|@smoke' --project=${{ matrix.browser }}
+            if [[ "${{ env.TARGET }}" == "prod" ]]; then
+              npm run test:regression:prod
+            else
+              npx playwright test --grep '@regression|@smoke' --project=${{ matrix.browser }}
+            fi
           fi
 
       - name: Upload HTML report
