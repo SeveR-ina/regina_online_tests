@@ -128,13 +128,15 @@ export default defineConfig({
       testMatch: "**/global.teardown.ts",
     },
 
-    // Guest tests (no authentication required)
+    // Guest tests (UI tests that don't require admin authentication)
+    // Note: Some tests may still use API fixtures that handle auth gracefully
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
       },
+      dependencies: ["setup"], // Needed for API tests that run in this project
       testIgnore: [
         "**/setup/**",
         "**/teardown/**",
@@ -148,6 +150,7 @@ export default defineConfig({
         ...devices["Desktop Safari"],
         viewport: { width: 1280, height: 720 },
       },
+      dependencies: ["setup"], // May include API smoke tests
       testIgnore: [
         "**/setup/**",
         "**/teardown/**",
@@ -186,6 +189,7 @@ export default defineConfig({
       use: {
         ...devices["iPhone 14"],
       },
+      dependencies: ["setup"], // May include API smoke tests
       testIgnore: [
         "**/setup/**",
         "**/teardown/**",
@@ -198,6 +202,7 @@ export default defineConfig({
       use: {
         ...devices["iPad Mini"],
       },
+      dependencies: ["setup"], // May include API smoke tests
       testIgnore: [
         "**/setup/**",
         "**/teardown/**",

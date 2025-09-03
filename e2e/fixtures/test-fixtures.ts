@@ -42,8 +42,14 @@ type Fixtures = {
  * Extended test with custom fixtures
  */
 export const test = base.extend<Fixtures>({
-  // Use admin storage state by default
-  storageState: FIXTURES.STORAGE_STATE.ADMIN,
+  // Use admin storage state by default (if it exists)
+  // eslint-disable-next-line no-empty-pattern
+  storageState: async ({}, use) => {
+    const fs = await import("fs");
+    const adminFile = FIXTURES.STORAGE_STATE.ADMIN;
+    const storageState = fs.existsSync(adminFile) ? adminFile : undefined;
+    await use(storageState);
+  },
 
   /**
    * Pre-authenticated admin page

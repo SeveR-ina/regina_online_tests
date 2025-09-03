@@ -9,7 +9,7 @@ import { PAGE_OBJECT_MESSAGES } from "@/data/logger-messages";
 import { test as setup } from "@playwright/test";
 import { AdminDashboardPage } from "@pom/pages/AdminDashboardPage";
 import { AdminLoginPage } from "@pom/pages/AdminLoginPage";
-import { TestConfig, logger } from "@utils/core.utils";
+import { logger } from "@utils/core.utils";
 
 const ADMIN_FILE = FIXTURES.STORAGE_STATE.ADMIN;
 
@@ -49,30 +49,6 @@ setup("authenticate as admin", async ({ page }) => {
     });
 
     throw error;
-  }
-});
-
-/**
- * Setup test user authentication (optional)
- * Creates auth state for regular test user if credentials are available
- */
-setup("authenticate as test user", async ({ page }) => {
-  const testUser = TestConfig.testUser;
-
-  try {
-    const loginPage = new AdminLoginPage(page);
-
-    await loginPage.gotoLogin();
-    await loginPage.login(testUser.email, testUser.password, {
-      waitForRedirect: false, // Test user might redirect differently
-      timeout: TIMEOUTS.LOGIN,
-    });
-
-    // Save test user auth state
-    const testUserFile = FIXTURES.STORAGE_STATE.TEST_USER;
-    await page.context().storageState({ path: testUserFile });
-  } catch (error) {
-    logger.warn(PAGE_OBJECT_MESSAGES.SETUP.TEST_USER_FAILED(error));
   }
 });
 

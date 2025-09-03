@@ -69,9 +69,13 @@ export class TestConfig {
   }
 
   static get adminCredentials() {
+    const target = process.env[ENV_VARS.TARGET] ?? "local";
+    const emailKey = `ADMIN_EMAIL_${target.toUpperCase()}`;
+    const passwordKey = `ADMIN_PASSWORD_${target.toUpperCase()}`;
+    
     return {
-      email: process.env[ENV_VARS.ADMIN_EMAIL] ?? "",
-      password: process.env[ENV_VARS.ADMIN_PASSWORD] ?? "",
+      email: process.env[emailKey] ?? process.env[ENV_VARS.ADMIN_EMAIL] ?? "",
+      password: process.env[passwordKey] ?? process.env[ENV_VARS.ADMIN_PASSWORD] ?? "",
     };
   }
 

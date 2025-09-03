@@ -1,4 +1,4 @@
-import { getProtectedPaths } from "@/data/constants";
+import { getProtectedPaths, PAGE_TITLES } from "@/data/constants";
 import { Locator, Page } from "@playwright/test";
 import { PageHelpers } from "@utils/core.utils";
 import {
@@ -424,10 +424,12 @@ export class AdminDashboardPage extends BasePage {
     await expectToBeVisible(this.pageWrapper);
     await expectToBeVisible(this.title);
     await expectToBeVisible(this.headerActions);
+    // Verify the logout button is present
+    await expectToBeVisible(this.logoutButton);
   }
 
   async assertTitle(): Promise<void> {
-    await expectToContainText(this.title, /blog dashboard/i);
+    await expectToContainText(this.title, PAGE_TITLES.ADMIN.DASHBOARD);
   }
 
   async assertHeaderButtons(): Promise<void> {

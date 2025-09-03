@@ -450,6 +450,17 @@ export const FIXTURES = {
 } as const;
 
 /**
+ * Page Titles and Text Constants
+ * Based on actual titles from the website project
+ */
+export const PAGE_TITLES = {
+  // Admin area page titles (from actual components)
+  ADMIN: {
+    DASHBOARD: "Admin Dashboard",
+  },
+} as const;
+
+/**
  * Common Error Messages (for UI validation)
  */
 export const ERROR_MESSAGES = {
