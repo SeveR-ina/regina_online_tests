@@ -133,7 +133,10 @@ export class AdminLoginPage extends BasePage {
       message: "Password input not found on login page",
     });
     // Submit button exists but may be disabled initially - just check it's present
-    await this.submitButton.waitFor({ state: 'attached', timeout: TIMEOUTS.DEFAULT });
+    await this.submitButton.waitFor({
+      state: "attached",
+      timeout: TIMEOUTS.DEFAULT,
+    });
 
     // Verify URL
     await expectPageToHaveURL(this.page, /\/admin\/login/);
