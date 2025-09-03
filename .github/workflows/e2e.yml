@@ -1,0 +1,177 @@
+name: E2E Tests
+
+on:
+  # Fast smoke tests on PR/push (desktop Chrome only)
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+  # Manual execution with full options
+  workflow_dispatch:
+    inputs:
+      type:
+        description: "Test type"
+        required: true
+        default: "smoke"
+        type: choice
+        options:
+          - smoke # Fast - Chrome desktop only
+          - regression # Full - All browsers & devices
+      target:
+        description: "Target environment"
+        required: true
+        default: "prod"
+        type: choice
+        options:
+          - prod
+          - local
+
+  # Scheduled runs
+  schedule:
+    - cron: "0 6 * * *" # Daily smoke tests at 6 AM UTC (Chrome only)
+    - cron: "0 2 * * 1" # Weekly regression on Monday 2 AM UTC (All browsers)
+
+  # Repository dispatch (triggered by main website deployment)
+  repository_dispatch:
+    types: [run-e2e-tests]
+
+jobs:
+  # Determine what to run
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      test-type: ${{ steps.determine.outputs.test-type }}
+      browsers: ${{ steps.determine.outputs.browsers }}
+      target: ${{ steps.determine.outputs.target }}
+    steps:
+      - id: determine
+        run: |
+          # Default values
+          TEST_TYPE="smoke"
+          TARGET="prod"
+          BROWSERS='["chromium"]'
+
+          # Determine test type and browsers based on trigger
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TEST_TYPE="${{ github.event.inputs.type }}"
+            TARGET="${{ github.event.inputs.target }}"
+            if [[ "${{ github.event.inputs.type }}" == "regression" ]]; then
+              BROWSERS='["chromium", "webkit", "iphone", "ipad-mini"]'
+            fi
+          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+            if [[ "${{ github.event.schedule }}" == "0 6 * * *" ]]; then
+              TEST_TYPE="smoke"
+            else
+              TEST_TYPE="regression"
+              BROWSERS='["chromium", "webkit", "iphone", "ipad-mini"]'
+            fi
+          elif [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            TEST_TYPE="smoke"
+            TARGET="${{ github.event.client_payload.target || 'prod' }}"
+          fi
+
+          echo "test-type=$TEST_TYPE" >> $GITHUB_OUTPUT
+          echo "browsers=$BROWSERS" >> $GITHUB_OUTPUT
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
+
+  e2e-tests:
+    needs: setup
+    runs-on: macos-latest
+    timeout-minutes: ${{ needs.setup.outputs.test-type == 'regression' && 90 || 45 }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: ${{ fromJson(needs.setup.outputs.browsers) }}
+
+    env:
+      TYPE: ${{ needs.setup.outputs.test-type }}
+      TARGET: ${{ needs.setup.outputs.target }}
+
+      # Environment URLs (from secrets - NO HARDCODED URLs!)
+      TEST_BASE_URL_PROD: ${{ secrets.TEST_BASE_URL_PROD }}
+      API_BASE_URL_PROD: ${{ secrets.API_BASE_URL_PROD }}
+
+      # Local URLs (not sensitive)
+      TEST_BASE_URL_LOCAL: http://localhost:3000
+      API_BASE_URL_LOCAL: http://localhost:3001/api
+
+      # Credentials (from secrets)
+      # Required GitHub Secrets: ADMIN_EMAIL, ADMIN_PASSWORD
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
+      # CI settings
+      CI: true
+      HEADLESS: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install browsers
+        run: |
+          if [[ "${{ env.TYPE }}" == "smoke" ]]; then
+            # Smoke: Chrome only for speed
+            npx playwright install --with-deps chromium
+          else
+            # Regression: All browsers
+            npx playwright install --with-deps
+          fi
+
+      - name: Run E2E tests
+        run: |
+          if [[ "${{ env.TYPE }}" == "smoke" ]]; then
+            # Smoke tests: Chrome desktop only
+            npm run test:smoke
+          else
+            # Regression tests: Current browser from matrix
+            npx playwright test --grep '@regression|@smoke' --project=${{ matrix.browser }}
+          fi
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ env.TYPE }}-${{ matrix.browser }}-${{ env.TARGET }}
+          path: playwright-report
+          retention-days: 30
+
+      - name: Upload test traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ env.TYPE }}-${{ matrix.browser }}-${{ env.TARGET }}
+          path: test-results
+          retention-days: 7
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { TYPE, TARGET } = process.env;
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+            const browser = '${{ matrix.browser }}';
+
+            const message = `${emoji} **E2E ${TYPE} tests** (${browser}, ${TARGET}): **${status}**
+
+            📊 [View Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
