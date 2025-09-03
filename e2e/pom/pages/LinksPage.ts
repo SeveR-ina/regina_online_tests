@@ -132,7 +132,7 @@ export class LinksPage extends BasePage {
   }
 
   async goBackToHome(): Promise<void> {
-    await this.safeClick(this.backToHomeLink);
+    await this.backToHomeLink.click();
     await this.waitForPageLoad();
   }
 
@@ -140,63 +140,49 @@ export class LinksPage extends BasePage {
    * Link interaction methods
    */
   async clickLinkedInLink(): Promise<void> {
-    await this.safeClick(this.linkedinLink);
+    await this.linkedinLink.click();
   }
 
   async clickGitHubLink(): Promise<void> {
-    await this.safeClick(this.githubLink);
+    await this.githubLink.click();
   }
 
   async clickTwitterLink(): Promise<void> {
     if (await this.isElementVisible(this.twitterLink)) {
-      await this.safeClick(this.twitterLink);
+      await this.twitterLink.click();
     }
   }
 
   async clickInstagramLink(): Promise<void> {
     if (await this.isElementVisible(this.instagramLink)) {
-      await this.safeClick(this.instagramLink);
+      await this.instagramLink.click();
     }
   }
 
   async clickResumeLink(): Promise<void> {
-    await this.safeClick(this.resumeLink);
+    await this.resumeLink.click();
   }
 
   async clickPortfolioLink(): Promise<void> {
-    await this.safeClick(this.portfolioLink);
+    await this.portfolioLink.click();
   }
 
   async clickBlogLink(): Promise<void> {
-    await this.safeClick(this.blogLink);
+    await this.blogLink.click();
   }
 
   async clickEmailLink(): Promise<void> {
-    await this.safeClick(this.emailLink);
+    await this.emailLink.click();
   }
 
   async clickPhoneLink(): Promise<void> {
     if (await this.isElementVisible(this.phoneLink)) {
-      await this.safeClick(this.phoneLink);
+      await this.phoneLink.click();
     }
   }
 
   async clickContactFormLink(): Promise<void> {
-    await this.safeClick(this.contactFormLink);
-  }
-
-  async clickProjectLink(projectIndex: number = 0): Promise<void> {
-    const projectLinks = await this.projectLink.all();
-    if (projectLinks[projectIndex]) {
-      await this.safeClick(projectLinks[projectIndex]);
-    }
-  }
-
-  async clickProjectGitHub(projectIndex: number = 0): Promise<void> {
-    const githubLinks = await this.projectGithub.all();
-    if (githubLinks[projectIndex]) {
-      await this.safeClick(githubLinks[projectIndex]);
-    }
+    await this.contactFormLink.click();
   }
 
   /**

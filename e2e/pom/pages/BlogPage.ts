@@ -147,7 +147,7 @@ export class BlogPage extends BasePage {
    */
   async search(term: string): Promise<void> {
     await PageHelpers.safeFill(this.searchInput, term);
-    await PageHelpers.safeClick(this.searchButton);
+    await this.searchButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
@@ -159,7 +159,7 @@ export class BlogPage extends BasePage {
 
   async clearSearch(): Promise<void> {
     if (await this.clearSearchButton.isVisible()) {
-      await PageHelpers.safeClick(this.clearSearchButton);
+      await this.clearSearchButton.click();
       await PageHelpers.waitForPageLoad(this.page);
     }
   }
@@ -173,25 +173,25 @@ export class BlogPage extends BasePage {
    */
   async clickFirstBlogCard(): Promise<void> {
     const firstCard = this.blogCards.first();
-    await PageHelpers.safeClick(firstCard);
+    await firstCard.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async clickBlogCardByTitle(title: string): Promise<void> {
     const card = this.blogCards.filter({ hasText: title }).first();
-    await PageHelpers.safeClick(card);
+    await card.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async clickReadMore(index: number = 0): Promise<void> {
     const readMoreButton = this.readMoreLinks.nth(index);
-    await PageHelpers.safeClick(readMoreButton);
+    await readMoreButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async likeBlogPost(index: number = 0): Promise<void> {
     const likeButton = this.likeButtons.nth(index);
-    await PageHelpers.safeClick(likeButton);
+    await likeButton.click();
   }
 
   /**
@@ -199,14 +199,14 @@ export class BlogPage extends BasePage {
    */
   async goToNextPage(): Promise<void> {
     if (await this.paginationNext.isEnabled()) {
-      await PageHelpers.safeClick(this.paginationNext);
+      await this.paginationNext.click();
       await PageHelpers.waitForPageLoad(this.page);
     }
   }
 
   async goToPreviousPage(): Promise<void> {
     if (await this.paginationPrev.isEnabled()) {
-      await PageHelpers.safeClick(this.paginationPrev);
+      await this.paginationPrev.click();
       await PageHelpers.waitForPageLoad(this.page);
     }
   }
@@ -216,7 +216,7 @@ export class BlogPage extends BasePage {
       `[data-testid="blog-pagination-page-${pageNumber}"]`
     );
     if (await pageButton.isVisible()) {
-      await PageHelpers.safeClick(pageButton);
+      await pageButton.click();
       await PageHelpers.waitForPageLoad(this.page);
     }
   }

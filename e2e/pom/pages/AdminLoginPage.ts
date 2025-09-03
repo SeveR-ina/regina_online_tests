@@ -61,9 +61,9 @@ export class AdminLoginPage extends BasePage {
       timeout = TIMEOUTS.LONG,
     } = options;
 
-    await this.safeFill(this.emailInput, email);
-    await this.safeFill(this.passwordInput, password);
-    await this.safeClick(this.submitButton);
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
 
     if (waitForRedirect) {
       await this.waitForUrl(`**${expectedRedirectUrl}*`, timeout);
@@ -93,9 +93,9 @@ export class AdminLoginPage extends BasePage {
   }
 
   async attemptInvalidLogin(email: string, password: string): Promise<void> {
-    await this.safeFill(this.emailInput, email);
-    await this.safeFill(this.passwordInput, password);
-    await this.safeClick(this.submitButton);
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
 
     // Don't wait for redirect on invalid login
     await this.page.waitForTimeout(TIMEOUTS.SHORT);
@@ -110,15 +110,15 @@ export class AdminLoginPage extends BasePage {
   }
 
   async fillEmail(email: string): Promise<void> {
-    await this.safeFill(this.emailInput, email);
+    await this.emailInput.fill(email);
   }
 
   async fillPassword(password: string): Promise<void> {
-    await this.safeFill(this.passwordInput, password);
+    await this.passwordInput.fill(password);
   }
 
   async submitLoginForm(): Promise<void> {
-    await this.safeClick(this.submitButton);
+    await this.submitButton.click();
   }
 
   /**
@@ -132,11 +132,15 @@ export class AdminLoginPage extends BasePage {
     await expectToBeVisible(this.passwordInput, {
       message: "Password input not found on login page",
     });
-    // Submit button exists but may be disabled initially - just check it's present
+    // Submit button exists but is disabled initially - just check it's attached to DOM
     await this.submitButton.waitFor({
       state: "attached",
       timeout: TIMEOUTS.DEFAULT,
     });
+
+    // Log for debugging
+    const isDisabled = await this.submitButton.isDisabled();
+    logger.info(`Submit button found - disabled: ${isDisabled}`);
 
     // Verify URL
     await expectPageToHaveURL(this.page, /\/admin\/login/);
@@ -203,7 +207,7 @@ export class AdminLoginPage extends BasePage {
 
   async clickForgotPassword(): Promise<void> {
     if (await this.isElementVisible(this.forgotPasswordLink)) {
-      await this.safeClick(this.forgotPasswordLink);
+      await this.forgotPasswordLink.click();
     } else {
       logger.warn(PAGE_OBJECT_MESSAGES.ADMIN_LOGIN.FORGOT_PASSWORD_NOT_FOUND);
     }

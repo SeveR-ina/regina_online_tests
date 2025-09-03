@@ -44,22 +44,22 @@ export class HomePage extends BasePage {
    * Card interaction methods
    */
   async clickAboutMeCard(): Promise<void> {
-    await this.safeClick(this.aboutMeBtn);
+    await this.aboutMeBtn.click();
     await this.waitForPageLoad();
   }
 
   async clickBlogCard(): Promise<void> {
-    await this.safeClick(this.blogBtn);
+    await this.blogBtn.click();
     await this.waitForPageLoad();
   }
 
   async clickCVCard(): Promise<void> {
-    await this.safeClick(this.cvBtn);
+    await this.cvBtn.click();
     await this.waitForPageLoad();
   }
 
   async clickLinksCard(): Promise<void> {
-    await this.safeClick(this.linksBtn);
+    await this.linksBtn.click();
     await this.waitForPageLoad();
   }
 

@@ -102,6 +102,35 @@ jobs:
       ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
       ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
+      # Protected paths (from secrets)
+      PROTECTED_AREA_PATH: ${{ secrets.PROTECTED_AREA_PATH }}
+      PROTECTED_LOGIN_PATH: ${{ secrets.PROTECTED_LOGIN_PATH }}
+      PROTECTED_DASHBOARD_PATH: ${{ secrets.PROTECTED_DASHBOARD_PATH }}
+      PROTECTED_CONTENT_PATH: ${{ secrets.PROTECTED_CONTENT_PATH }}
+      PROTECTED_CONTENT_CREATE_PATH: ${{ secrets.PROTECTED_CONTENT_CREATE_PATH }}
+      PROTECTED_CONTENT_EDIT_PATH: ${{ secrets.PROTECTED_CONTENT_EDIT_PATH }}
+      PROTECTED_USERS_PATH: ${{ secrets.PROTECTED_USERS_PATH }}
+      PROTECTED_BACKUP_PATH: ${{ secrets.PROTECTED_BACKUP_PATH }}
+      PROTECTED_SECURITY_PATH: ${{ secrets.PROTECTED_SECURITY_PATH }}
+      PROTECTED_SETTINGS_PATH: ${{ secrets.PROTECTED_SETTINGS_PATH }}
+
+      # Auth paths (from secrets)
+      LOGIN_PATH: ${{ secrets.LOGIN_PATH }}
+      LOGOUT_PATH: ${{ secrets.LOGOUT_PATH }}
+      REGISTER_PATH: ${{ secrets.REGISTER_PATH }}
+      FORGOT_PASSWORD_PATH: ${{ secrets.FORGOT_PASSWORD_PATH }}
+      RESET_PASSWORD_PATH: ${{ secrets.RESET_PASSWORD_PATH }}
+
+      # API paths (from secrets)
+      PROTECTED_API_STATS_PATH: ${{ secrets.PROTECTED_API_STATS_PATH }}
+      PROTECTED_API_USERS_PATH: ${{ secrets.PROTECTED_API_USERS_PATH }}
+      AUTH_API_LOGIN_PATH: ${{ secrets.AUTH_API_LOGIN_PATH }}
+      AUTH_API_LOGOUT_PATH: ${{ secrets.AUTH_API_LOGOUT_PATH }}
+      AUTH_API_PROFILE_PATH: ${{ secrets.AUTH_API_PROFILE_PATH }}
+
+      # Health check
+      HEALTH_ENDPOINT_PATH: ${{ secrets.HEALTH_ENDPOINT_PATH }}
+
       # CI settings
       CI: true
       HEADLESS: true

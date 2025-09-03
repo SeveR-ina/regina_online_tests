@@ -298,28 +298,28 @@ export class AdminDashboardPage extends BasePage {
   }
 
   async goToNewPost(): Promise<void> {
-    await PageHelpers.safeClick(this.newPostButton);
+    await this.newPostButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async goToUsers(): Promise<void> {
-    await PageHelpers.safeClick(this.usersButton);
+    await this.usersButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async goToSecurity(): Promise<void> {
-    await PageHelpers.safeClick(this.securityButton);
+    await this.securityButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async goToBackup(): Promise<void> {
-    await PageHelpers.safeClick(this.backupButton);
+    await this.backupButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async logout(): Promise<void> {
     await PageHelpers.handleDialog(this.page, "accept"); // Handle logout confirmation
-    await PageHelpers.safeClick(this.logoutButton);
+    await this.logoutButton.click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
@@ -327,23 +327,23 @@ export class AdminDashboardPage extends BasePage {
    * Post management methods
    */
   async editPost(postId: string): Promise<void> {
-    await PageHelpers.safeClick(this.editPostButton(postId));
+    await this.editPostButton(postId).click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async viewPost(postId: string): Promise<void> {
-    await PageHelpers.safeClick(this.viewPostButton(postId));
+    await this.viewPostButton(postId).click();
     await PageHelpers.waitForPageLoad(this.page);
   }
 
   async pinPost(postId: string): Promise<void> {
-    await PageHelpers.safeClick(this.pinPostButton(postId));
+    await this.pinPostButton(postId).click();
     // Wait for the action to complete
     await this.page.waitForTimeout(1000);
   }
 
   async unpinPost(postId: string): Promise<void> {
-    await PageHelpers.safeClick(this.unpinPostButton(postId));
+    await this.unpinPostButton(postId).click();
     // Wait for the action to complete
     await this.page.waitForTimeout(1000);
   }
@@ -351,7 +351,7 @@ export class AdminDashboardPage extends BasePage {
   async deletePost(postId: string): Promise<void> {
     // Handle the delete confirmation dialog
     await PageHelpers.handleDialog(this.page, "accept", "delete");
-    await PageHelpers.safeClick(this.deletePostButton(postId));
+    await this.deletePostButton(postId).click();
 
     // Wait for the deletion to complete
     await this.page.waitForTimeout(2000);

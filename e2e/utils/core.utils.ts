@@ -179,40 +179,6 @@ export class PageHelpers {
   }
 
   /**
-   * Safely click an element with retry mechanism
-   */
-  static async safeClick(
-    locator: Locator,
-    options: {
-      timeout?: number;
-      retries?: number;
-      waitForVisible?: boolean;
-    } = {}
-  ): Promise<void> {
-    const {
-      timeout = TIMEOUTS.CLICK,
-      retries = 3,
-      waitForVisible = true,
-    } = options;
-
-    for (let i = 0; i < retries; i++) {
-      try {
-        if (waitForVisible) {
-          await locator.waitFor({ state: "visible", timeout });
-        }
-
-        await locator.scrollIntoViewIfNeeded();
-        await locator.click({ timeout });
-        return;
-      } catch (error) {
-        if (i === retries - 1) throw error;
-        await new Promise(resolve => setTimeout(resolve, TIMEOUTS.RETRY_DELAY));
-        logger.warn(`Click attempt ${i + 1} failed, retrying...`);
-      }
-    }
-  }
-
-  /**
    * Safely fill input with validation
    */
   static async safeFill(

@@ -204,7 +204,7 @@ export class CVPage extends BasePage {
   }
 
   async goBackToHome(): Promise<void> {
-    await this.safeClick(this.backToHomeLink);
+    await this.backToHomeLink.click();
     await this.waitForPageLoad();
   }
 
@@ -212,21 +212,21 @@ export class CVPage extends BasePage {
    * Action methods
    */
   async downloadPDF(): Promise<void> {
-    await this.safeClick(this.downloadPdfButton);
+    await this.downloadPdfButton.click();
   }
 
   async printCV(): Promise<void> {
     if (await this.isElementVisible(this.printButton)) {
-      await this.safeClick(this.printButton);
+      await this.printButton.click();
     }
   }
 
   async clickLinkedInProfile(): Promise<void> {
-    await this.safeClick(this.linkedinProfile);
+    await this.linkedinProfile.click();
   }
 
   async clickGitHubProfile(): Promise<void> {
-    await this.safeClick(this.githubProfile);
+    await this.githubProfile.click();
   }
 
   /**

@@ -199,14 +199,6 @@ export class AdminUsersPage extends BasePage {
     await this.assertPageLoaded();
   }
 
-  /**
-   * User search and filtering methods
-   */
-  async searchUsers(searchTerm: string): Promise<void> {
-    await this.safeFill(this.searchInput, searchTerm);
-    await this.page.keyboard.press("Enter");
-  }
-
   async filterByRole(
     role: "admin" | "editor" | "contributor" | "subscriber"
   ): Promise<void> {
@@ -220,21 +212,14 @@ export class AdminUsersPage extends BasePage {
   }
 
   async clearAllFilters(): Promise<void> {
-    await this.safeClick(this.clearFiltersButton);
+    await this.clearFiltersButton.click();
   }
 
   /**
    * Bulk actions methods
    */
   async selectAllUsers(): Promise<void> {
-    await this.safeClick(this.selectAllCheckbox);
-  }
-
-  async selectUser(userIndex: number): Promise<void> {
-    const userCheckboxes = await this.userCheckbox.all();
-    if (userCheckboxes[userIndex]) {
-      await this.safeClick(userCheckboxes[userIndex]);
-    }
+    await this.selectAllCheckbox.click();
   }
 
   /**
@@ -288,11 +273,11 @@ export class AdminUsersPage extends BasePage {
    * Pagination methods
    */
   async goToNextPage(): Promise<void> {
-    await this.safeClick(this.nextPageButton);
+    await this.nextPageButton.click();
   }
 
   async goToPreviousPage(): Promise<void> {
-    await this.safeClick(this.previousPageButton);
+    await this.previousPageButton.click();
   }
 
   async setItemsPerPage(itemsCount: "10" | "25" | "50" | "100"): Promise<void> {

@@ -134,79 +134,6 @@ export abstract class BasePage {
   /**
    * Common interaction methods
    */
-  async safeClick(
-    locator: Locator,
-    options: {
-      timeout?: number;
-      retries?: number;
-      waitForVisible?: boolean;
-      scrollIntoView?: boolean;
-    } = {}
-  ): Promise<void> {
-    const {
-      timeout = TIMEOUTS.CLICK,
-      retries = 3,
-      waitForVisible = true,
-      scrollIntoView = true,
-    } = options;
-
-    for (let i = 0; i < retries; i++) {
-      try {
-        if (waitForVisible) {
-          await locator.waitFor({ state: "visible", timeout });
-        }
-
-        if (scrollIntoView) {
-          await locator.scrollIntoViewIfNeeded();
-        }
-
-        await locator.click({ timeout });
-        return;
-      } catch (error) {
-        if (i === retries - 1) throw error;
-        await this.page.waitForTimeout(TIMEOUTS.POLLING_INTERVAL);
-        logger.warn(PAGE_OBJECT_MESSAGES.BASE_PAGE.CLICK_RETRY(i + 1));
-      }
-    }
-  }
-
-  async safeFill(
-    locator: Locator,
-    text: string,
-    options: {
-      timeout?: number;
-      clear?: boolean;
-      validate?: boolean;
-    } = {}
-  ): Promise<void> {
-    const { timeout = TIMEOUTS.FILL, clear = true, validate = true } = options;
-
-    await locator.waitFor({ state: "visible", timeout });
-
-    if (clear) {
-      await locator.clear();
-    }
-
-    await locator.fill(text);
-
-    if (validate) {
-      await expect(locator).toHaveValue(text);
-    }
-  }
-
-  async safeType(
-    locator: Locator,
-    text: string,
-    options: {
-      delay?: number;
-      timeout?: number;
-    } = {}
-  ): Promise<void> {
-    const { delay = 100, timeout = TIMEOUTS.TYPE } = options;
-
-    await locator.waitFor({ state: "visible", timeout });
-    await locator.type(text, { delay });
-  }
 
   async safeSelectOption(
     locator: Locator,
@@ -226,22 +153,22 @@ export abstract class BasePage {
   }
 
   async goToAbout(): Promise<void> {
-    await this.safeClick(this.aboutLink);
+    await this.aboutLink.click();
     await this.waitForPageLoad();
   }
 
   async goToBlog(): Promise<void> {
-    await this.safeClick(this.blogLink);
+    await this.blogLink.click();
     await this.waitForPageLoad();
   }
 
   async goToCV(): Promise<void> {
-    await this.safeClick(this.cvLink);
+    await this.cvLink.click();
     await this.waitForPageLoad();
   }
 
   async goToLinks(): Promise<void> {
-    await this.safeClick(this.linksLink);
+    await this.linksLink.click();
     await this.waitForPageLoad();
   }
 
@@ -250,14 +177,14 @@ export abstract class BasePage {
    */
   async switchToEnglish(): Promise<void> {
     if (await this.isElementVisible(this.englishLink)) {
-      await this.safeClick(this.englishLink);
+      await this.englishLink.click();
       await this.waitForPageLoad();
     }
   }
 
   async switchToGerman(): Promise<void> {
     if (await this.isElementVisible(this.germanLink)) {
-      await this.safeClick(this.germanLink);
+      await this.germanLink.click();
       await this.waitForPageLoad();
     }
   }
@@ -267,13 +194,13 @@ export abstract class BasePage {
    */
   async openMobileMenu(): Promise<void> {
     if (await this.isElementVisible(this.navigationToggle)) {
-      await this.safeClick(this.navigationToggle);
+      await this.navigationToggle.click();
     }
   }
 
   async closeMobileMenu(): Promise<void> {
     if (await this.isElementVisible(this.navigationToggle)) {
-      await this.safeClick(this.navigationToggle);
+      await this.navigationToggle.click();
     }
   }
 
@@ -281,11 +208,11 @@ export abstract class BasePage {
    * Footer interaction methods
    */
   async clickEmailLink(): Promise<void> {
-    await this.safeClick(this.emailLink);
+    await this.emailLink.click();
   }
 
   async clickLinkedInLink(): Promise<void> {
-    await this.safeClick(this.linkedinLink);
+    await this.linkedinLink.click();
   }
 
   /**
@@ -495,7 +422,7 @@ export abstract class BasePage {
       const locator = this.page.locator(
         `[name="${field}"], [data-testid="${field}"], #${field}`
       );
-      await this.safeFill(locator, value);
+      await locator.fill(value);
     }
   }
 
@@ -503,7 +430,7 @@ export abstract class BasePage {
     submitSelector: string = 'button[type="submit"], input[type="submit"]'
   ): Promise<void> {
     const submitButton = this.page.locator(submitSelector);
-    await this.safeClick(submitButton);
+    await submitButton.click();
   }
 
   /**

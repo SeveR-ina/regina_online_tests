@@ -265,75 +265,8 @@ export class AdminBackupPage extends BasePage {
     await this.assertPageLoaded();
   }
 
-  /**
-   * Backup creation methods
-   */
-  async createFullBackup(
-    backupName?: string,
-    description?: string
-  ): Promise<void> {
-    await this.safeSelectOption(this.backupTypeSelect, "full");
-
-    if (backupName) {
-      await this.safeFill(this.backupNameInput, backupName);
-    }
-
-    if (description) {
-      await this.safeFill(this.backupDescriptionInput, description);
-    }
-
-    // Select all components
-    await this.safeClick(this.includeDatabaseCheckbox);
-    await this.safeClick(this.includeFilesCheckbox);
-    await this.safeClick(this.includeMediaCheckbox);
-    await this.safeClick(this.includeConfigCheckbox);
-
-    await this.safeClick(this.createBackupButton);
-    await this.waitForBackupCompletion();
-  }
-
-  async createCustomBackup(options: {
-    name?: string;
-    description?: string;
-    type: "full" | "database" | "files" | "media";
-    includeDatabase?: boolean;
-    includeFiles?: boolean;
-    includeMedia?: boolean;
-    includeConfig?: boolean;
-  }): Promise<void> {
-    await this.safeSelectOption(this.backupTypeSelect, options.type);
-
-    if (options.name) {
-      await this.safeFill(this.backupNameInput, options.name);
-    }
-
-    if (options.description) {
-      await this.safeFill(this.backupDescriptionInput, options.description);
-    }
-
-    // Set component options
-    if (options.includeDatabase) {
-      await this.safeClick(this.includeDatabaseCheckbox);
-    }
-
-    if (options.includeFiles) {
-      await this.safeClick(this.includeFilesCheckbox);
-    }
-
-    if (options.includeMedia) {
-      await this.safeClick(this.includeMediaCheckbox);
-    }
-
-    if (options.includeConfig) {
-      await this.safeClick(this.includeConfigCheckbox);
-    }
-
-    await this.safeClick(this.createBackupButton);
-    await this.waitForBackupCompletion();
-  }
-
   async cancelBackupInProgress(): Promise<void> {
-    await this.safeClick(this.cancelBackupButton);
+    await this.cancelBackupButton.click();
     await this.handleDialog("accept", "cancel");
   }
 
@@ -384,76 +317,6 @@ export class AdminBackupPage extends BasePage {
     return backups;
   }
 
-  async downloadBackup(backupIndex: number): Promise<void> {
-    const downloadButtons = await this.downloadBackupButton.all();
-    if (downloadButtons[backupIndex]) {
-      await this.safeClick(downloadButtons[backupIndex]);
-    }
-  }
-
-  async deleteBackup(backupIndex: number): Promise<void> {
-    const deleteButtons = await this.deleteBackupButton.all();
-    if (deleteButtons[backupIndex]) {
-      await this.safeClick(deleteButtons[backupIndex]);
-      await this.handleDialog("accept", "delete");
-      await this.waitForSuccessMessage();
-    }
-  }
-
-  async viewBackupDetails(backupIndex: number): Promise<void> {
-    const detailsButtons = await this.viewBackupDetailsButton.all();
-    if (detailsButtons[backupIndex]) {
-      await this.safeClick(detailsButtons[backupIndex]);
-    }
-  }
-
-  /**
-   * Restore methods
-   */
-  async restoreFromBackup(
-    backupIndex: number,
-    options?: {
-      restoreDatabase?: boolean;
-      restoreFiles?: boolean;
-      restoreMedia?: boolean;
-      restoreConfig?: boolean;
-      overwriteExisting?: boolean;
-    }
-  ): Promise<void> {
-    const restoreButtons = await this.restoreBackupButton.all();
-    if (restoreButtons[backupIndex]) {
-      await this.safeClick(restoreButtons[backupIndex]);
-      await expectToBeVisible(this.restoreOptionsSection);
-
-      // Set restore options if provided
-      if (options) {
-        if (options.restoreDatabase) {
-          await this.safeClick(this.restoreDatabaseCheckbox);
-        }
-
-        if (options.restoreFiles) {
-          await this.safeClick(this.restoreFilesCheckbox);
-        }
-
-        if (options.restoreMedia) {
-          await this.safeClick(this.restoreMediaCheckbox);
-        }
-
-        if (options.restoreConfig) {
-          await this.safeClick(this.restoreConfigCheckbox);
-        }
-
-        if (options.overwriteExisting) {
-          await this.safeClick(this.overwriteExistingCheckbox);
-        }
-      }
-
-      await this.safeClick(this.restoreFromUploadButton);
-      await this.handleDialog("accept", "restore");
-      await this.waitForRestoreCompletion();
-    }
-  }
-
   async uploadAndRestoreBackup(
     filePath: string,
     options?: {
@@ -465,7 +328,7 @@ export class AdminBackupPage extends BasePage {
     }
   ): Promise<void> {
     await this.uploadBackupInput.setInputFiles(filePath);
-    await this.safeClick(this.uploadBackupButton);
+    await this.uploadBackupButton.click();
 
     // Wait for upload to complete
     await expectToBeVisible(this.restoreOptionsSection);
@@ -473,27 +336,27 @@ export class AdminBackupPage extends BasePage {
     // Set restore options
     if (options) {
       if (options.restoreDatabase) {
-        await this.safeClick(this.restoreDatabaseCheckbox);
+        await this.restoreDatabaseCheckbox.click();
       }
 
       if (options.restoreFiles) {
-        await this.safeClick(this.restoreFilesCheckbox);
+        await this.restoreFilesCheckbox.click();
       }
 
       if (options.restoreMedia) {
-        await this.safeClick(this.restoreMediaCheckbox);
+        await this.restoreMediaCheckbox.click();
       }
 
       if (options.restoreConfig) {
-        await this.safeClick(this.restoreConfigCheckbox);
+        await this.restoreConfigCheckbox.click();
       }
 
       if (options.overwriteExisting) {
-        await this.safeClick(this.overwriteExistingCheckbox);
+        await this.overwriteExistingCheckbox.click();
       }
     }
 
-    await this.safeClick(this.restoreFromUploadButton);
+    await this.restoreFromUploadButton.click();
     await this.handleDialog("accept", "restore");
     await this.waitForRestoreCompletion();
   }
@@ -502,33 +365,7 @@ export class AdminBackupPage extends BasePage {
    * Scheduled backup settings methods
    */
   async enableScheduledBackups(): Promise<void> {
-    await this.safeClick(this.enableScheduledBackupsToggle);
-  }
-
-  async configureScheduledBackups(settings: {
-    frequency: "daily" | "weekly" | "monthly";
-    time: string; // Format: "HH:MM"
-    maxBackups: number;
-    location?: "local" | "cloud" | "external";
-  }): Promise<void> {
-    await this.safeSelectOption(this.backupFrequencySelect, settings.frequency);
-    await this.safeFill(this.backupTimeInput, settings.time);
-    await this.safeFill(this.maxBackupsInput, settings.maxBackups.toString());
-
-    if (settings.location) {
-      await this.safeSelectOption(this.backupLocationSelect, settings.location);
-    }
-
-    await this.safeClick(this.saveBackupSettingsButton);
-    await this.waitForSuccessMessage();
-  }
-
-  /**
-   * Search and filter methods
-   */
-  async searchBackups(searchTerm: string): Promise<void> {
-    await this.safeFill(this.searchBackupsInput, searchTerm);
-    await this.page.keyboard.press("Enter");
+    await this.enableScheduledBackupsToggle.click();
   }
 
   async filterByBackupType(
@@ -544,31 +381,24 @@ export class AdminBackupPage extends BasePage {
   }
 
   async clearAllBackupFilters(): Promise<void> {
-    await this.safeClick(this.clearFiltersButton);
+    await this.clearFiltersButton.click();
   }
 
   /**
    * Bulk actions methods
    */
   async selectAllBackups(): Promise<void> {
-    await this.safeClick(this.selectAllBackupsCheckbox);
-  }
-
-  async selectBackup(backupIndex: number): Promise<void> {
-    const checkboxes = await this.backupCheckbox.all();
-    if (checkboxes[backupIndex]) {
-      await this.safeClick(checkboxes[backupIndex]);
-    }
+    await this.selectAllBackupsCheckbox.click();
   }
 
   async bulkDeleteBackups(): Promise<void> {
-    await this.safeClick(this.bulkDeleteButton);
+    await this.bulkDeleteButton.click();
     await this.handleDialog("accept", "delete");
     await this.waitForSuccessMessage();
   }
 
   async bulkDownloadBackups(): Promise<void> {
-    await this.safeClick(this.bulkDownloadButton);
+    await this.bulkDownloadButton.click();
   }
 
   /**

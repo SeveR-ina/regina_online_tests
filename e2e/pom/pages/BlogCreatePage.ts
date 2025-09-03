@@ -166,7 +166,7 @@ export class BlogCreatePage extends BasePage {
   }
 
   async goBackToBlogList(): Promise<void> {
-    await this.safeClick(this.cancelButton);
+    await this.cancelButton.click();
     await this.waitForPageLoad();
   }
 
@@ -174,20 +174,20 @@ export class BlogCreatePage extends BasePage {
    * Form filling methods
    */
   async fillBlogTitle(title: string): Promise<void> {
-    await this.safeFill(this.titleInput, title);
+    await this.titleInput.fill(title);
   }
 
   async fillBlogExcerpt(excerpt: string): Promise<void> {
-    await this.safeFill(this.excerptInput, excerpt);
+    await this.excerptInput.fill(excerpt);
   }
 
   async fillBlogContent(content: string): Promise<void> {
-    await this.safeFill(this.contentEditor, content);
+    await this.contentEditor.fill(content);
   }
 
   async fillBlogTags(tags: string[]): Promise<void> {
     const tagsString = tags.join(", ");
-    await this.safeFill(this.tagsInput, tagsString);
+    await this.tagsInput.fill(tagsString);
   }
 
   async selectCategory(category: string): Promise<void> {
@@ -207,26 +207,26 @@ export class BlogCreatePage extends BasePage {
   }
 
   async setPublishDate(date: string): Promise<void> {
-    await this.safeFill(this.publishDateInput, date);
+    await this.publishDateInput.fill(date);
   }
 
   async toggleFeatured(): Promise<void> {
-    await this.safeClick(this.featuredCheckbox);
+    await this.featuredCheckbox.click();
   }
 
   /**
    * Rich text editor methods
    */
   async formatTextBold(): Promise<void> {
-    await this.safeClick(this.boldButton);
+    await this.boldButton.click();
   }
 
   async formatTextItalic(): Promise<void> {
-    await this.safeClick(this.italicButton);
+    await this.italicButton.click();
   }
 
   async formatTextUnderline(): Promise<void> {
-    await this.safeClick(this.underlineButton);
+    await this.underlineButton.click();
   }
 
   async setHeading(
@@ -243,49 +243,49 @@ export class BlogCreatePage extends BasePage {
   }
 
   async removeFeaturedImage(): Promise<void> {
-    await this.safeClick(this.removeImageButton);
+    await this.removeImageButton.click();
   }
 
   /**
    * SEO methods
    */
   async fillSEOTitle(title: string): Promise<void> {
-    await this.safeFill(this.seoTitleInput, title);
+    await this.seoTitleInput.fill(title);
   }
 
   async fillSEODescription(description: string): Promise<void> {
-    await this.safeFill(this.seoDescriptionInput, description);
+    await this.seoDescriptionInput.fill(description);
   }
 
   async fillSEOKeywords(keywords: string[]): Promise<void> {
     const keywordsString = keywords.join(", ");
-    await this.safeFill(this.seoKeywordsInput, keywordsString);
+    await this.seoKeywordsInput.fill(keywordsString);
   }
 
   /**
    * Action methods
    */
   async saveDraft(): Promise<void> {
-    await this.safeClick(this.saveDraftButton);
+    await this.saveDraftButton.click();
     await this.waitForSuccessMessage();
   }
 
   async publishBlog(): Promise<void> {
-    await this.safeClick(this.publishButton);
+    await this.publishButton.click();
     await this.waitForSuccessMessage();
   }
 
   async updateBlog(): Promise<void> {
-    await this.safeClick(this.updateButton);
+    await this.updateButton.click();
     await this.waitForSuccessMessage();
   }
 
   async previewBlog(): Promise<void> {
-    await this.safeClick(this.previewButton);
+    await this.previewButton.click();
   }
 
   async deleteBlog(): Promise<void> {
-    await this.safeClick(this.deleteButton);
+    await this.deleteButton.click();
 
     // Handle confirmation dialog
     await this.handleDialog("accept", "delete");

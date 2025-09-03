@@ -43,7 +43,7 @@ const getTestConfig = () => {
   if (IS_DOCKER) {
     return {
       workers: 1,
-      retries: 3,
+      retries: 1, // Only 1 retry in Docker
       timeout: 90_000,
       headless: true,
     };
@@ -52,7 +52,7 @@ const getTestConfig = () => {
   if (IS_CI) {
     return {
       workers: "50%",
-      retries: 2,
+      retries: 1, // Only 1 retry in CI
       timeout: 60_000,
       headless: true,
     };
@@ -60,7 +60,7 @@ const getTestConfig = () => {
 
   return {
     workers: undefined,
-    retries: 1,
+    retries: 1, // Only 1 retry locally
     timeout: 60_000,
     headless: !process.env.HEADED,
   };

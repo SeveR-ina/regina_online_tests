@@ -121,7 +121,7 @@ export class AboutMePage extends BasePage {
   }
 
   async goBackToHome(): Promise<void> {
-    await this.safeClick(this.backToHomeLink);
+    await this.backToHomeLink.click();
     await this.waitForPageLoad();
   }
 
@@ -130,20 +130,20 @@ export class AboutMePage extends BasePage {
    */
   async downloadCV(): Promise<void> {
     if (await this.isElementVisible(this.downloadCVButton)) {
-      await this.safeClick(this.downloadCVButton);
+      await this.downloadCVButton.click();
     }
   }
 
   async clickLinkedInProfile(): Promise<void> {
-    await this.safeClick(this.linkedinLink);
+    await this.linkedinLink.click();
   }
 
   async clickGitHubProfile(): Promise<void> {
-    await this.safeClick(this.githubLink);
+    await this.githubLink.click();
   }
 
   async clickEmailContact(): Promise<void> {
-    await this.safeClick(this.emailContact);
+    await this.emailContact.click();
   }
 
   /**

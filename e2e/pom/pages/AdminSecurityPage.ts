@@ -187,44 +187,8 @@ export class AdminSecurityPage extends BasePage {
     await this.assertPageLoaded();
   }
 
-  /**
-   * Password management methods
-   */
-  async changePassword(
-    currentPassword: string,
-    newPassword: string
-  ): Promise<void> {
-    await this.safeFill(this.currentPasswordInput, currentPassword);
-    await this.safeFill(this.newPasswordInput, newPassword);
-    await this.safeFill(this.confirmPasswordInput, newPassword);
-
-    await this.safeClick(this.changePasswordButton);
-    await this.waitForSuccessMessage();
-  }
-
-  async getPasswordStrength(): Promise<string> {
-    return await this.getElementText(this.passwordStrengthIndicator);
-  }
-
-  /**
-   * Two-factor authentication methods
-   */
-  async enableTwoFactor(verificationCode: string): Promise<void> {
-    await this.safeClick(this.twoFactorToggle);
-    await expectToBeVisible(this.qrCode);
-    await this.safeFill(this.verificationCodeInput, verificationCode);
-    await this.safeClick(this.enableTwoFactorButton);
-    await this.waitForSuccessMessage();
-  }
-
-  async disableTwoFactor(verificationCode: string): Promise<void> {
-    await this.safeFill(this.verificationCodeInput, verificationCode);
-    await this.safeClick(this.disableTwoFactorButton);
-    await this.waitForSuccessMessage();
-  }
-
   async generateBackupCodes(): Promise<void> {
-    await this.safeClick(this.backupCodesButton);
+    await this.backupCodesButton.click();
   }
 
   /**
@@ -234,16 +198,8 @@ export class AdminSecurityPage extends BasePage {
     return await this.getElementCount(this.sessionItem);
   }
 
-  async revokeSession(sessionIndex: number = 0): Promise<void> {
-    const revokeButtons = await this.revokeSessionButton.all();
-    if (revokeButtons[sessionIndex]) {
-      await this.safeClick(revokeButtons[sessionIndex]);
-      await this.handleDialog("accept", "revoke");
-    }
-  }
-
   async revokeAllSessions(): Promise<void> {
-    await this.safeClick(this.revokeAllSessionsButton);
+    await this.revokeAllSessionsButton.click();
     await this.handleDialog("accept", "revoke all");
   }
 
@@ -283,19 +239,7 @@ export class AdminSecurityPage extends BasePage {
    * Security settings methods
    */
   async toggleLoginNotifications(): Promise<void> {
-    await this.safeClick(this.loginNotificationsToggle);
-  }
-
-  async addIpToWhitelist(ipAddress: string): Promise<void> {
-    await this.safeFill(this.ipWhitelistInput, ipAddress);
-    await this.safeClick(this.addIpButton);
-  }
-
-  async removeIpFromWhitelist(ipIndex: number = 0): Promise<void> {
-    const removeButtons = await this.removeIpButton.all();
-    if (removeButtons[ipIndex]) {
-      await this.safeClick(removeButtons[ipIndex]);
-    }
+    await this.loginNotificationsToggle.click();
   }
 
   /**
@@ -305,32 +249,26 @@ export class AdminSecurityPage extends BasePage {
     return await this.getElementCount(this.logEntry);
   }
 
-  async filterLogsByDateRange(fromDate: string, toDate: string): Promise<void> {
-    await this.safeFill(this.dateFromInput, fromDate);
-    await this.safeFill(this.dateToInput, toDate);
-    await this.safeClick(this.applyFiltersButton);
-  }
-
   async filterLogsByAction(
     action: "login" | "logout" | "failed-login" | "password-change"
   ): Promise<void> {
     await this.safeSelectOption(this.actionFilter, action);
-    await this.safeClick(this.applyFiltersButton);
+    await this.applyFiltersButton.click();
   }
 
   async filterLogsByStatus(
     status: "success" | "failed" | "blocked"
   ): Promise<void> {
     await this.safeSelectOption(this.statusFilter, status);
-    await this.safeClick(this.applyFiltersButton);
+    await this.applyFiltersButton.click();
   }
 
   async clearAllFilters(): Promise<void> {
-    await this.safeClick(this.clearFiltersButton);
+    await this.clearFiltersButton.click();
   }
 
   async exportAccessLogs(): Promise<void> {
-    await this.safeClick(this.exportLogsButton);
+    await this.exportLogsButton.click();
   }
 
   async getRecentLogEntries(count: number = 5): Promise<
