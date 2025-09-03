@@ -27,10 +27,10 @@ on:
           - prod
           - local
 
-  # Scheduled runs
-  schedule:
-    - cron: "0 6 * * *" # Daily smoke tests at 6 AM UTC (Chrome only)
-    - cron: "0 2 * * 1" # Weekly regression on Monday 2 AM UTC (All browsers)
+  # Scheduled runs (commented out - manual execution only)
+  # schedule:
+  #   - cron: "0 6 * * *" # Daily smoke tests at 6 AM UTC (Chrome only)
+  #   - cron: "0 2 * * 1" # Weekly regression on Monday 2 AM UTC (All browsers)
 
   # Repository dispatch (triggered by main website deployment)
   repository_dispatch:
