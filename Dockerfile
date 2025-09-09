@@ -56,7 +56,7 @@ COPY . .
 
 # Set CI-specific environment variables
 ENV GITHUB_ACTIONS=true
-ENV REPORTER=github,html,junit
+ENV REPORTER=github,html
 
 # Create user for security
 RUN groupadd -r testuser && useradd -r -g testuser testuser

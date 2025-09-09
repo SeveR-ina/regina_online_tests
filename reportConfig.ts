@@ -12,14 +12,6 @@ export const REPORTS_CI: ReporterDescription[] = [
     {
       outputFolder: "./test-results/html-report",
       open: "never",
-      attachmentsBaseURL: process.env.CI ? "https://artifacts.url/" : undefined,
-    },
-  ],
-  [
-    "junit",
-    {
-      outputFile: "./test-results/junit-results.xml",
-      includeProjectInTestName: true,
     },
   ],
   [
@@ -36,11 +28,8 @@ export const REPORTS_CI: ReporterDescription[] = [
       links: [
         {
           type: "issue",
-          urlTemplate: "https://github.com/your-org/repo/issues/%s",
-        },
-        {
-          type: "tms",
-          urlTemplate: "https://your-test-management-system.com/test/%s",
+          urlTemplate:
+            "https://github.com/SeveR-ina/regina_online_tests/issues/%s",
         },
       ],
       categories: [

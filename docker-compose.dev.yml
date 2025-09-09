@@ -36,8 +36,7 @@ services:
       - ADMIN_BASE_URL_LOCAL=http://host.docker.internal:3000/admin
       # Development-friendly timeouts
       - MAX_RETRIES=2
-      - ACTION_TIMEOUT=15000
-      - NAVIGATION_TIMEOUT=30000
+      - TIMEOUT=4000
       # Full recording for debugging
       - SCREENSHOT_ON_FAILURE=true
       - VIDEO_ON_FAILURE=true

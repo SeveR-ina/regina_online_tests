@@ -62,7 +62,7 @@ export default tseslint.config(
   },
   {
     // Playwright-specific test files configuration
-    files: ["e2e/**/*.{js,ts}", "**/*.spec.{js,ts}", "**/*.test.{js,ts}"],
+    files: ["src/**/*.{js,ts}", "**/*.spec.{js,ts}", "**/*.test.{js,ts}"],
     rules: {
       // Relax some rules for test files
       "@typescript-eslint/no-explicit-any": "off",
@@ -86,7 +86,7 @@ export default tseslint.config(
       "coverage/**",
       "dist/**",
       "build/**",
-      "e2e/.auth/**",
+      "src/.auth/**",
       "*.min.js",
       "eslint.config.mts",
       "lint-staged.config.js",

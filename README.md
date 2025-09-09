@@ -12,10 +12,9 @@ Playwright end-to-end testing framework with TypeScript and Page Object Model.
   - [Development Testing](#development-testing)
   - [Production Testing](#production-testing)
   - [Docker Services](#docker-services)
+  - [Build Targets](#build-targets)
+  - [Volume Mounts](#volume-mounts)
 - [Reports](#reports)
-- [CI/CD Integration](#cicd-integration)
-  - [Test Execution](#test-execution)
-  - [Repository Dispatch](#repository-dispatch)
 - [Test Tags](#test-tags)
 - [Code Quality](#code-quality)
 
@@ -148,34 +147,6 @@ docker-compose -f docker-compose.prod.yml --profile api up api-tests
 npm run report
 npm run show-trace
 ```
-
-## CI/CD Integration
-
-### Test Execution
-
-| Trigger  | Type       | Browsers     | Schedule         |
-| -------- | ---------- | ------------ | ---------------- |
-| PR/Push  | Smoke      | Chrome       | Every commit     |
-| Manual   | Choice     | Configurable | On-demand        |
-| Schedule | Smoke      | Chrome       | Daily 6 AM UTC   |
-| Schedule | Regression | All          | Weekly Mon 2 AM  |
-| Deploy   | Smoke      | Chrome       | After deployment |
-
-### Repository Dispatch
-
-Trigger tests from main website:
-
-```yaml
-- name: Trigger E2E Tests
-  uses: peter-evans/repository-dispatch@v3
-  with:
-    token: ${{ secrets.TESTS_REPO_TOKEN }}
-    repository: your-username/your-e2e-repo
-    event-type: run-e2e-tests
-    client-payload: '{"target": "prod"}'
-```
-
-Create GitHub PAT with `repo` scope and add as `TESTS_REPO_TOKEN` secret.
 
 ## Test Tags
 

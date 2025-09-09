@@ -25,8 +25,8 @@ pnpm-lock.yaml
 /playwright/.cache/
 
 # Test artifacts
-/e2e/.auth/
-/e2e/test-results/
+/src/.auth/
+/src/test-results/
 /screenshots/
 /videos/
 /traces/
@@ -230,14 +230,13 @@ Dockerfile.*
 *.temp
 
 # Test specific
-junit-results.xml
 test-results.json
 smoke-report.json
 regression-report.json
 
 # Authentication files (should be generated, not committed)
-e2e/.auth/admin.json
-e2e/.auth/user.json
+src/.auth/admin.json
+src/.auth/user.json
 
 # Local configuration override files
 .env.override

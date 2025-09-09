@@ -34,9 +34,7 @@ services:
       - ADMIN_BASE_URL_PROD=${ADMIN_BASE_URL_PROD}
       # CI-optimized settings
       - MAX_RETRIES=1
-      - ACTION_TIMEOUT=10000
-      - NAVIGATION_TIMEOUT=20000
-      - EXPECT_TIMEOUT=10000
+      - TIMEOUT=4000
       # Minimal recording for CI efficiency
       - SCREENSHOT_ON_FAILURE=true
       - VIDEO_ON_FAILURE=false

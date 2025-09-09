@@ -70,7 +70,7 @@ const testConfig = getTestConfig();
 const grepPattern = getTestGrepPattern();
 
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: "./src",
   timeout: testConfig.timeout,
   ...grepPattern, // Apply production safety filtering
   expect: {
@@ -165,7 +165,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
-        storageState: "e2e/.auth/admin.json",
+        storageState: "src/.auth/admin.json",
       },
       dependencies: ["setup"],
       testMatch: ["**/admin*.spec.ts", "**/admin/**/*.spec.ts"],
@@ -176,7 +176,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Safari"],
         viewport: { width: 1280, height: 720 },
-        storageState: "e2e/.auth/admin.json",
+        storageState: "src/.auth/admin.json",
       },
       dependencies: ["setup"],
       testMatch: ["**/admin*.spec.ts", "**/admin/**/*.spec.ts"],
@@ -226,7 +226,7 @@ export default defineConfig({
   outputDir: "test-results/artifacts/",
 
   // Global teardown only (setup is handled via project dependencies)
-  globalTeardown: "./e2e/fixtures/global.teardown.ts",
+  globalTeardown: "./src/fixtures/global.teardown.ts",
 
   // Web server configuration disabled - assuming server is already running
 

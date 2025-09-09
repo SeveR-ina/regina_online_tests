@@ -3,23 +3,29 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "baseUrl": "src",
     "strict": true,
+    "allowUnreachableCode": false,
     "esModuleInterop": true,
+    "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "skipLibCheck": true,
     "types": ["node", "@playwright/test"],
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
-      "@/*": ["./e2e/*"],
-      "@utils/*": ["./e2e/utils/*"],
-      "@fixtures/*": ["./e2e/fixtures/*"],
-      "@pom/*": ["./e2e/pom/*"],
-      "@tests/*": ["./e2e/tests/*"],
-      "@test-data/*": ["e2e/data/*"],
-      "@config/*": ["./*"]
+      "@utils/*": ["utils/*"],
+      "@fixtures/*": ["fixtures/*"],
+      "@pom/*": ["pom/*"],
+      "@tests/*": ["tests/*"],
+      "@test-data/*": ["data/*"]
     }
   },
-  "include": ["e2e/**/*.ts", "playwright.config.ts", "utils/**/*.ts"]
+  "include": ["src/**/*.ts", "playwright.config.ts", "utils/**/*.ts"],
+  "lib": ["esnext"],
+  "ts-node": {
+    "esm": true
+  }
 }
