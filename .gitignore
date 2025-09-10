@@ -264,3 +264,6 @@ playwright.config.local.ts
 # Generated documentation
 docs/generated/
 api-docs/
+regina_online_tests@2.0.0
+playwright
+npm

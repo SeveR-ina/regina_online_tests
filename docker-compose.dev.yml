@@ -18,29 +18,15 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    init: true
+    ipc: host
     volumes:
-      - ./test-results:/app/test-results
-      - ./playwright-report:/app/playwright-report
-      - ./logs:/app/logs
-      - .:/app # Hot reloading for development
-      - /app/node_modules
+      - ./test-results:/home/pwuser/app/test-results
+      - ./playwright-report:/home/pwuser/app/playwright-report
     environment:
       - TARGET=local
-      - DOCKER=true
-      - HEADED=false
-      - DEBUG_MODE=true
-      - LOG_LEVEL=debug
-      # Localhost URLs
       - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
       - API_BASE_URL_LOCAL=http://host.docker.internal:3001/api
-      - ADMIN_BASE_URL_LOCAL=http://host.docker.internal:3000/admin
-      # Development-friendly timeouts
-      - MAX_RETRIES=2
-      - TIMEOUT=4000
-      # Full recording for debugging
-      - SCREENSHOT_ON_FAILURE=true
-      - VIDEO_ON_FAILURE=true
-      - TRACE_ON_FAILURE=true
     networks:
       - e2e-dev-network
     command: npm run test
@@ -51,18 +37,18 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    init: true
+    ipc: host
     volumes:
-      - ./test-results:/app/test-results
-      - ./playwright-report:/app/playwright-report
+      - ./test-results:/home/pwuser/app/test-results
+      - ./playwright-report:/home/pwuser/app/playwright-report
     environment:
       - TARGET=local
-      - DOCKER=true
       - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
       - API_BASE_URL_LOCAL=http://host.docker.internal:3001/api
-      - SCREENSHOT_ON_FAILURE=true
     networks:
       - e2e-dev-network
-    command: npm run test:smoke -- --project=chromium
+    command: npm run test:smoke
 
   # Interactive Debug Runner (use with --profile debug)
   dev-runner:
@@ -70,17 +56,13 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    init: true
+    ipc: host
     volumes:
-      - ./test-results:/app/test-results
-      - ./playwright-report:/app/playwright-report
-      - .:/app
-      - /app/node_modules
+      - ./test-results:/home/pwuser/app/test-results
+      - ./playwright-report:/home/pwuser/app/playwright-report
     environment:
       - TARGET=local
-      - DOCKER=true
-      - HEADED=true
-      - DEBUG_MODE=true
-      - PAUSE_ON_FAILURE=true
       - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000
     networks:
       - e2e-dev-network
@@ -94,9 +76,10 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    init: true
+    ipc: host
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/home/pwuser/app
     environment:
       - TARGET=local
       - TEST_BASE_URL_LOCAL=http://host.docker.internal:3000

@@ -1,67 +1,53 @@
-# Multi-stage Dockerfile for Regina Online E2E Tests
-# Optimized for CI/CD and local development
+# E2E test runner image for Playwright
+# Align image and @playwright/test version to avoid browser mismatch
 
-FROM mcr.microsoft.com/playwright:v1.55.0-jammy as base
+FROM mcr.microsoft.com/playwright:v1.55.0-noble AS base
 
-# Set working directory
-WORKDIR /app
+# Use the built-in non-root user recommended by Playwright
+# Ref: https://playwright.dev/docs/docker
+USER pwuser
+WORKDIR /home/pwuser/app
 
-# Set environment variables
+# Ensure npm cache directory exists and is writable
+RUN mkdir -p /home/pwuser/.npm && chmod -R 700 /home/pwuser/.npm
+
+# Prevent @playwright/test from attempting to download browsers
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV NODE_ENV=test
 ENV CI=true
-ENV DOCKER=true
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Install dependencies
-COPY package*.json ./
+# 1) Install deps with better caching
+COPY --chown=pwuser:pwuser package*.json ./
 RUN npm ci --ignore-scripts && npm cache clean --force
 
-# Copy source code
-COPY . .
+# 2) Copy source
+COPY --chown=pwuser:pwuser . .
 
-# Create directories for test results
-RUN mkdir -p test-results test-results/html-report test-results/screenshots test-results/videos
+# Optional: Playwright creates result folders automatically; keep if your tooling expects them
+RUN mkdir -p test-results && chmod -R 755 test-results
 
-# Set permissions
-RUN chmod -R 755 test-results
-
-# Production image
-FROM base as production
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
-
-# Default command
+# Default command (headless tests)
 CMD ["npm", "run", "test"]
 
-# Development image with additional tools
-FROM base as development
-
-# Install debugging tools
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    vim \
-    && rm -rf /var/lib/apt/lists/*
-
-# Default command for development
+# Development stage with extra tools (kept separate to avoid bloating CI image)
+FROM mcr.microsoft.com/playwright:v1.55.0-noble AS development
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl wget vim \
+  && rm -rf /var/lib/apt/lists/*
+USER pwuser
+WORKDIR /home/pwuser/app
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV NODE_ENV=test
+ENV CI=true
+COPY --chown=pwuser:pwuser package*.json ./
+RUN npm ci --ignore-scripts && npm cache clean --force
+COPY --chown=pwuser:pwuser . .
 CMD ["npm", "run", "test:headed"]
 
-# CI image optimized for GitHub Actions
-FROM base as ci
-
-# Copy all files including test configs
-COPY . .
-
-# Set CI-specific environment variables
+# CI stage (lean; uses pwuser; no healthcheck)
+FROM base AS ci
+# If CI needs env flags or reporter config, set them here:
 ENV GITHUB_ACTIONS=true
-ENV REPORTER=github,html
-
-# Create user for security
-RUN groupadd -r testuser && useradd -r -g testuser testuser
-RUN chown -R testuser:testuser /app
-USER testuser
-
-# Default command for CI
+# Reporter can be configured in playwright.config; environment overrides are optional.
 CMD ["npm", "run", "test"]

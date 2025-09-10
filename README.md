@@ -9,11 +9,9 @@ Playwright end-to-end testing framework with TypeScript and Page Object Model.
 - [GitHub Secrets](#github-secrets)
 - [Run Tests](#run-tests)
 - [Docker](#docker)
-  - [Development Testing](#development-testing)
-  - [Production Testing](#production-testing)
-  - [Docker Services](#docker-services)
-  - [Build Targets](#build-targets)
-  - [Volume Mounts](#volume-mounts)
+  - [Build and Run](#build-and-run)
+  - [Option 1: Direct Docker Commands](#option-1-direct-docker-commands)
+  - [Option 2: Docker Compose (Recommended)](#option-2-docker-compose)
 - [Reports](#reports)
 - [Test Tags](#test-tags)
 - [Code Quality](#code-quality)
@@ -75,71 +73,74 @@ npm run test:debug
 
 ## Docker
 
-Run tests in containerized environment with Docker Compose.
-
-### Development Testing
-
-For local development against `localhost:3000`:
+### Option 1: Direct Docker Commands
 
 ```bash
-# Full E2E test suite
-docker-compose -f docker-compose.dev.yml up e2e-tests
+# Build the image (uses 'base' stage by default)
+docker build -t regina-e2e-tests .
 
-# Quick smoke tests (Chrome only)
+# Run against LOCALHOST (app on your Mac)
+# IMPORTANT: use host.docker.internal so the container can reach your host
+# Smoke:
+docker run --init --ipc=host --rm \
+  -e TARGET=local \
+  -e TEST_BASE_URL_LOCAL=http://host.docker.internal:3000 \
+  -e API_BASE_URL_LOCAL=http://host.docker.internal:3001/api \
+  regina-e2e-tests npm run test:smoke
+# All tests:
+docker run --init --ipc=host --rm \
+  -e TARGET=local \
+  -e TEST_BASE_URL_LOCAL=http://host.docker.internal:3000 \
+  -e API_BASE_URL_LOCAL=http://host.docker.internal:3001/api \
+  regina-e2e-tests
+
+# Run against PROD (replace with your real URLs)
+# Smoke:
+docker run --init --ipc=host --rm \
+  -e TARGET=prod \
+  -e TEST_BASE_URL_PROD=https://your-domain.com \
+  -e API_BASE_URL_PROD=https://your-domain.com/api \
+  regina-e2e-tests npm run test:smoke
+# All tests:
+docker run --init --ipc=host --rm \
+  -e TARGET=prod \
+  -e TEST_BASE_URL_PROD=https://your-domain.com \
+  -e API_BASE_URL_PROD=https://your-domain.com/api \
+  regina-e2e-tests
+
+# Save results locally (optional)
+docker run --init --ipc=host --rm \
+  -e TARGET=local \
+  -e TEST_BASE_URL_LOCAL=http://host.docker.internal:3000 \
+  -e API_BASE_URL_LOCAL=http://host.docker.internal:3001/api \
+  -v $(pwd)/test-results:/home/pwuser/app/test-results \
+  regina-e2e-tests
+```
+
+### Option 2: Docker Compose
+
+```bash
+# Local development testing
+docker-compose -f docker-compose.dev.yml up e2e-tests
 docker-compose -f docker-compose.dev.yml up smoke-tests
 
-# Interactive debug mode
-docker-compose -f docker-compose.dev.yml --profile debug up dev-runner
-
-# Code generation tool
-docker-compose -f docker-compose.dev.yml --profile codegen up codegen
-```
-
-### Production Testing
-
-For testing against production environment:
-
-```bash
-# Set environment variables
-export TEST_BASE_URL_PROD=https://your-domain.com
-export API_BASE_URL_PROD=https://your-domain.com/api
-
-# Quick smoke tests
+# Production testing
 docker-compose -f docker-compose.prod.yml up smoke-tests
-
-# Full E2E test suite
 docker-compose -f docker-compose.prod.yml up e2e-tests
-
-# Comprehensive regression tests
-docker-compose -f docker-compose.prod.yml --profile regression up regression-tests
-
-# API-only tests
-docker-compose -f docker-compose.prod.yml --profile api up api-tests
 ```
-
-### Docker Services
-
-| Service              | Purpose               | Configuration                  | Command                   |
-| -------------------- | --------------------- | ------------------------------ | ------------------------- |
-| **e2e-tests**        | Full test suite       | All browsers, full recording   | `npm run test`            |
-| **smoke-tests**      | Quick validation      | Chrome only, minimal recording | `npm run test:smoke`      |
-| **regression-tests** | Comprehensive testing | All browsers, traces enabled   | `npm run test:regression` |
-| **api-tests**        | API testing only      | No browser, API endpoints      | `npm run test:api`        |
-| **dev-runner**       | Debug mode            | Interactive, hot reload        | `npm run test:debug`      |
-| **codegen**          | Code generation       | Interactive recorder           | `npm run codegen:local`   |
 
 ### Build Targets
 
-- **production**: Optimized for CI/CD, minimal tools
-- **development**: Full dev tools, debugging capabilities
-- **ci**: GitHub Actions optimized, security hardened
+The Dockerfile has different stages:
 
-### Volume Mounts
+- **base** (default): Standard testing
+- **development**: Includes debugging tools
+- **ci**: Optimized for CI/CD
 
-- `./test-results` - Test artifacts and reports
-- `./playwright-report` - HTML reports
-- `./logs` - Application logs (dev only)
-- `.` - Source code (dev hot reload)
+```bash
+# Build specific target
+docker build --target development -t regina-e2e-dev .
+```
 
 ## Reports
 

@@ -21,12 +21,16 @@ const getTestGrepPattern = () => {
 
 // URL configuration helper
 const getBaseURL = (key: "TEST_BASE_URL" | "API_BASE_URL"): string => {
+  // 1) Explicit override without suffix takes precedence
+  const direct = process.env[key];
+  if (direct) return direct;
+
+  // 2) Environment-specific variable, e.g. TEST_BASE_URL_LOCAL
   const envKey = `${key}_${TARGET.toUpperCase()}`;
   const envValue = process.env[envKey];
-
   if (envValue) return envValue;
 
-  // Fallback defaults
+  // 3) Fallback defaults
   if (TARGET === "prod") {
     return key === "TEST_BASE_URL"
       ? "https://reginaonline.de"
@@ -42,7 +46,7 @@ const getBaseURL = (key: "TEST_BASE_URL" | "API_BASE_URL"): string => {
 const getTestConfig = () => {
   if (IS_DOCKER) {
     return {
-      workers: 1,
+      workers: 3,
       retries: 1, // Only 1 retry in Docker
       timeout: 90_000,
       headless: true,
@@ -59,7 +63,7 @@ const getTestConfig = () => {
   }
 
   return {
-    workers: undefined,
+    workers: "50%",
     retries: 1, // Only 1 retry locally
     timeout: 60_000,
     headless: !process.env.HEADED,
@@ -68,6 +72,8 @@ const getTestConfig = () => {
 
 const testConfig = getTestConfig();
 const grepPattern = getTestGrepPattern();
+
+const ONLY_PROJECT = process.env.PW_PROJECT?.trim();
 
 export default defineConfig({
   testDir: "./src",
@@ -220,7 +226,7 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
-  ],
+  ].filter(p => !ONLY_PROJECT || p.name === ONLY_PROJECT),
 
   // Test output directories
   outputDir: "test-results/artifacts/",
